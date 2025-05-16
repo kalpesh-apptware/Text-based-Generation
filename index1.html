@@ -1,0 +1,1223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Marvel: Legacy Awakened</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@300;400;600&family=Orbitron:wght@400;600;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            /* Color palette */
+            --primary-dark: #0d1b2a;
+            --primary-medium: #1b263b;
+            --primary-light: #415a77;
+            --accent-bright: #e63946;
+            --accent-glow: rgba(230, 57, 70, 0.3);
+            --text-primary: #f1faee;
+            --text-secondary: #a8dadc;
+            --text-highlight: #e63946;
+            --health-color: #e63946;
+            --courage-color: #fca311;
+            --wisdom-color: #2a9d8f;
+            --button-bg: #1b263b;
+            --button-hover: #415a77;
+            --card-bg: rgba(27, 38, 59, 0.8);
+            --modal-bg: rgba(13, 27, 42, 0.97);
+            
+            /* Typography */
+            --font-heading: 'Orbitron', sans-serif;
+            --font-body: 'Exo 2', sans-serif;
+            
+            /* Spacing */
+            --space-xs: 0.25rem;
+            --space-sm: 0.5rem;
+            --space-md: 1rem;
+            --space-lg: 1.5rem;
+            --space-xl: 2rem;
+            --space-xxl: 3rem;
+            
+            /* Effects */
+            --glow-soft: 0 0 8px var(--accent-glow);
+            --glow-strong: 0 0 15px var(--accent-glow);
+            --shadow-soft: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --shadow-medium: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: var(--font-body);
+            background-color: var(--primary-dark);
+            color: var(--text-primary);
+            line-height: 1.6;
+            overflow-x: hidden;
+            height: 100vh;
+            position: relative;
+            background-image: url('https://images.pexels.com/photos/956999/milky-way-starry-sky-night-sky-star-956999.jpeg');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+        }
+        
+        /* Particles container */
+        #particles-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            pointer-events: none;
+            background-color: rgba(13, 27, 42, 0.85);
+        }
+        
+        .particle {
+            position: absolute;
+            background-color: var(--accent-bright);
+            border-radius: 50%;
+            opacity: 0.3;
+            animation: float 20s infinite linear;
+        }
+        
+        @keyframes float {
+            0% {
+                transform: translateY(0) translateX(0) rotate(0deg);
+            }
+            25% {
+                transform: translateY(-20px) translateX(10px) rotate(90deg);
+            }
+            50% {
+                transform: translateY(0) translateX(20px) rotate(180deg);
+            }
+            75% {
+                transform: translateY(20px) translateX(10px) rotate(270deg);
+            }
+            100% {
+                transform: translateY(0) translateX(0) rotate(360deg);
+            }
+        }
+        
+        /* Game Container */
+        .game-container {
+            position: relative;
+            z-index: 1;
+            max-width: 900px;
+            min-height: 100vh;
+            margin: 0 auto;
+            padding: var(--space-md);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        
+        /* Header */
+        header {
+            padding: var(--space-md) 0;
+            text-align: center;
+            margin-bottom: var(--space-lg);
+        }
+        
+        .game-title {
+            font-family: var(--font-heading);
+            font-size: 2.5rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            text-shadow: 0 0 10px rgba(230, 57, 70, 0.5);
+            margin: 0;
+            line-height: 1.2;
+        }
+        
+        .highlight {
+            color: var(--accent-bright);
+            text-shadow: var(--glow-soft);
+        }
+        
+        /* Main content */
+        main {
+            flex: 1;
+        }
+        
+        .game-screen {
+            display: none;
+            flex-direction: column;
+            height: 100%;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .game-screen.active {
+            display: flex;
+        }
+        
+        /* Start Screen */
+        #start-screen {
+            align-items: center;
+            text-align: center;
+            justify-content: center;
+            gap: var(--space-lg);
+            padding: var(--space-xl) var(--space-md);
+        }
+        
+        .subtitle {
+            font-family: var(--font-heading);
+            font-size: 1.4rem;
+            margin-bottom: var(--space-lg);
+            letter-spacing: 1px;
+        }
+        
+        .intro-text {
+            font-size: 1.1rem;
+            max-width: 600px;
+            margin-bottom: var(--space-xl);
+            color: var(--text-secondary);
+            line-height: 1.8;
+        }
+        
+        .hero-image {
+            width: 250px;
+            height: 250px;
+            background-image: radial-gradient(circle, var(--accent-bright) 0%, transparent 70%);
+            opacity: 0.2;
+            border-radius: 50%;
+            margin-bottom: var(--space-lg);
+            animation: pulse 3s infinite alternate;
+        }
+        
+        @keyframes pulse {
+            0% {
+                transform: scale(0.95);
+                box-shadow: 0 0 40px var(--accent-glow);
+            }
+            100% {
+                transform: scale(1.05);
+                box-shadow: 0 0 70px var(--accent-glow);
+            }
+        }
+        
+        /* Game Screen */
+        #game-screen {
+            gap: var(--space-lg);
+        }
+        
+        .stats-container {
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: var(--space-md);
+            margin-bottom: var(--space-lg);
+            background-color: var(--primary-medium);
+            padding: var(--space-md);
+            border-radius: 8px;
+            box-shadow: var(--shadow-soft);
+        }
+        
+        .stat {
+            flex: 1;
+            min-width: 100px;
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-xs);
+        }
+        
+        .stat-label {
+            font-family: var(--font-heading);
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .stat-bar-container {
+            height: 8px;
+            background-color: var(--primary-light);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        
+        .stat-bar {
+            height: 100%;
+            transition: width 0.5s ease;
+        }
+        
+        .health-bar {
+            background-color: var(--health-color);
+            box-shadow: 0 0 5px var(--health-color);
+        }
+        
+        .courage-bar {
+            background-color: var(--courage-color);
+            box-shadow: 0 0 5px var(--courage-color);
+        }
+        
+        .wisdom-bar {
+            background-color: var(--wisdom-color);
+            box-shadow: 0 0 5px var(--wisdom-color);
+        }
+        
+        .stat-value {
+            font-size: 0.9rem;
+            align-self: flex-end;
+        }
+        
+        /* Narrative Container */
+        .narrative-container {
+            background-color: var(--card-bg);
+            border-radius: 8px;
+            padding: var(--space-lg);
+            margin-bottom: var(--space-lg);
+            box-shadow: var(--shadow-medium);
+            border: 1px solid rgba(230, 57, 70, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .narrative-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, var(--accent-bright), transparent);
+            animation: scanline 2s infinite linear;
+        }
+        
+        @keyframes scanline {
+            0% {
+                transform: translateX(-100%);
+            }
+            100% {
+                transform: translateX(100%);
+            }
+        }
+        
+        .scene-description {
+            font-family: var(--font-heading);
+            font-size: 1.3rem;
+            color: var(--accent-bright);
+            margin-bottom: var(--space-md);
+            text-shadow: var(--glow-soft);
+        }
+        
+        .narrative-text {
+            min-height: 150px;
+            line-height: 1.8;
+        }
+        
+        .narrative-text p {
+            margin-bottom: var(--space-md);
+        }
+        
+        /* Options Container */
+        .options-container {
+            margin-bottom: var(--space-xl);
+        }
+        
+        #options-list {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-md);
+        }
+        
+        .option-btn {
+            background-color: var(--button-bg);
+            color: var(--text-primary);
+            border: 1px solid rgba(230, 57, 70, 0.3);
+            border-radius: 4px;
+            padding: var(--space-md) var(--space-lg);
+            text-align: left;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: var(--font-body);
+            font-size: 1rem;
+            position: relative;
+            z-index: 1;
+            overflow: hidden;
+        }
+        
+        .option-btn::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 0;
+            height: 100%;
+            background-color: rgba(230, 57, 70, 0.1);
+            z-index: -1;
+            transition: width 0.3s ease;
+        }
+        
+        .option-btn:hover {
+            border-color: var(--accent-bright);
+            transform: translateY(-2px);
+            box-shadow: var(--glow-soft);
+        }
+        
+        .option-btn:hover::before {
+            width: 100%;
+        }
+        
+        #custom-action-container {
+            margin-top: var(--space-lg);
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-sm);
+        }
+        
+        #custom-action-container.hidden {
+            display: none;
+        }
+        
+        #custom-action-input {
+            background-color: var(--primary-medium);
+            border: 1px solid rgba(230, 57, 70, 0.3);
+            color: var(--text-primary);
+            padding: var(--space-md);
+            border-radius: 4px;
+            font-family: var(--font-body);
+            font-size: 1rem;
+        }
+        
+        #custom-action-input:focus {
+            outline: none;
+            border-color: var(--accent-bright);
+            box-shadow: var(--glow-soft);
+        }
+        
+        /* Ending Screen */
+        #ending-screen {
+            align-items: center;
+            text-align: center;
+            justify-content: center;
+            padding: var(--space-xl) var(--space-md);
+            gap: var(--space-xl);
+        }
+        
+        .ending-title {
+            font-family: var(--font-heading);
+            font-size: 2rem;
+            color: var(--accent-bright);
+            margin-bottom: var(--space-lg);
+            text-shadow: var(--glow-soft);
+        }
+        
+        .ending-narrative {
+            font-size: 1.1rem;
+            line-height: 1.8;
+            margin-bottom: var(--space-xl);
+            max-width: 700px;
+        }
+        
+        /* Footer */
+        footer {
+            padding: var(--space-md) 0;
+            margin-top: auto;
+        }
+        
+        .game-controls {
+            display: flex;
+            justify-content: center;
+            gap: var(--space-md);
+        }
+        
+        /* Buttons */
+        .btn {
+            font-family: var(--font-heading);
+            background-color: transparent;
+            color: var(--text-primary);
+            border: 2px solid var(--accent-bright);
+            border-radius: 4px;
+            padding: var(--space-md) var(--space-lg);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-size: 1rem;
+            position: relative;
+            z-index: 1;
+            overflow: hidden;
+        }
+        
+        .btn::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 0;
+            height: 100%;
+            background-color: var(--accent-bright);
+            z-index: -1;
+            transition: width 0.3s ease;
+        }
+        
+        .btn:hover {
+            color: var(--primary-dark);
+            box-shadow: var(--glow-soft);
+        }
+        
+        .btn:hover::before {
+            width: 100%;
+        }
+        
+        .btn-primary {
+            border-color: var(--accent-bright);
+            color: var(--accent-bright);
+        }
+        
+        .btn-secondary {
+            border-color: var(--text-secondary);
+            color: var(--text-secondary);
+        }
+        
+        .btn-secondary:hover {
+            border-color: var(--text-primary);
+            color: var(--primary-dark);
+        }
+        
+        .btn-secondary::before {
+            background-color: var(--text-primary);
+        }
+        
+        .btn-small {
+            padding: var(--space-xs) var(--space-md);
+            font-size: 0.8rem;
+        }
+        
+        .pulse-effect {
+            animation: pulse-border 2s infinite;
+        }
+        
+        @keyframes pulse-border {
+            0% {
+                box-shadow: 0 0 0 0 var(--accent-glow);
+            }
+            70% {
+                box-shadow: 0 0 0 10px rgba(230, 57, 70, 0);
+            }
+            100% {
+                box-shadow: 0 0 0 0 rgba(230, 57, 70, 0);
+            }
+        }
+        
+        /* Modals */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(13, 27, 42, 0.9);
+            z-index: 10;
+            justify-content: center;
+            align-items: center;
+            backdrop-filter: blur(4px);
+        }
+        
+        .modal.active {
+            display: flex;
+        }
+        
+        .modal-content {
+            background-color: var(--primary-medium);
+            padding: var(--space-xl);
+            border-radius: 8px;
+            max-width: 500px;
+            width: 90%;
+            border: 1px solid rgba(230, 57, 70, 0.3);
+            box-shadow: var(--shadow-medium);
+            position: relative;
+        }
+        
+        .modal-content h3 {
+            font-family: var(--font-heading);
+            margin-bottom: var(--space-md);
+            color: var(--accent-bright);
+        }
+        
+        .modal-content p {
+            margin-bottom: var(--space-md);
+        }
+        
+        textarea {
+            width: 100%;
+            background-color: var(--primary-dark);
+            border: 1px solid rgba(230, 57, 70, 0.3);
+            color: var(--text-primary);
+            padding: var(--space-md);
+            border-radius: 4px;
+            font-family: var(--font-body);
+            font-size: 0.9rem;
+            margin-bottom: var(--space-md);
+            min-height: 100px;
+        }
+        
+        /* Loading Overlay */
+        #loading-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: var(--modal-bg);
+            z-index: 100;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+        
+        #loading-overlay.active {
+            display: flex;
+        }
+        
+        .loader {
+            width: 60px;
+            height: 60px;
+            margin-bottom: var(--space-lg);
+            position: relative;
+        }
+        
+        .loader::before,
+        .loader::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            border: 3px solid transparent;
+            border-top-color: var(--accent-bright);
+        }
+        
+        .loader::before {
+            animation: spin 1.5s linear infinite;
+            z-index: 2;
+        }
+        
+        .loader::after {
+            border: 3px solid rgba(230, 57, 70, 0.2);
+            z-index: 1;
+        }
+        
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+        
+        .loading-text {
+            font-family: var(--font-heading);
+            font-size: 1.2rem;
+            color: var(--accent-bright);
+            text-shadow: var(--glow-soft);
+            letter-spacing: 2px;
+        }
+        
+        /* Utility Classes */
+        .hidden {
+            display: none !important;
+        }
+        
+        /* Responsive Styles */
+        @media (max-width: 768px) {
+            .game-title {
+                font-size: 1.8rem;
+            }
+            
+            .subtitle {
+                font-size: 1.1rem;
+            }
+            
+            .stats-container {
+                flex-direction: column;
+                gap: var(--space-sm);
+            }
+            
+            .stat {
+                flex-direction: row;
+                align-items: center;
+                gap: var(--space-md);
+            }
+            
+            .stat-label {
+                width: 80px;
+            }
+            
+            .stat-bar-container {
+                flex: 1;
+            }
+            
+            .game-controls {
+                flex-wrap: wrap;
+            }
+            
+            .scene-description {
+                font-size: 1.1rem;
+            }
+            
+            .hero-image {
+                width: 180px;
+                height: 180px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="particles-container"></div>
+    
+    <div class="game-container">
+        <header>
+            <h1 class="game-title">MARVEL: <span class="highlight">LEGACY AWAKENED</span></h1>
+        </header>
+        
+        <main id="game-content">
+            <div id="start-screen" class="game-screen active">
+                <div class="hero-image"></div>
+                <h2 class="subtitle">A Marvel Universe adventure where <span class="highlight">YOUR</span> choices shape reality</h2>
+                <p class="intro-text">You are the survivor of a catastrophic quantum breach. Now altered with unstable powers, you've been taken into SHIELD custody. Nick Fury believes you're the only one who can stop a multiverse collapse — the fate of the Marvel Universe is in your hands.</p>
+                <button id="start-game-btn" class="btn btn-primary pulse-effect">Begin Your Journey</button>
+            </div>
+            
+            <div id="game-screen" class="game-screen">
+                <div class="stats-container">
+                    <div class="stat">
+                        <span class="stat-label">Health</span>
+                        <div class="stat-bar-container">
+                            <div id="health-bar" class="stat-bar health-bar" style="width: 100%"></div>
+                        </div>
+                        <span id="health-value" class="stat-value">100</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-label">Courage</span>
+                        <div class="stat-bar-container">
+                            <div id="courage-bar" class="stat-bar courage-bar" style="width: 50%"></div>
+                        </div>
+                        <span id="courage-value" class="stat-value">50</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-label">Wisdom</span>
+                        <div class="stat-bar-container">
+                            <div id="wisdom-bar" class="stat-bar wisdom-bar" style="width: 50%"></div>
+                        </div>
+                        <span id="wisdom-value" class="stat-value">50</span>
+                    </div>
+                </div>
+                
+                <div class="narrative-container">
+                    <h3 id="scene-description" class="scene-description">You wake up in a SHIELD facility...</h3>
+                    <div id="narrative-text" class="narrative-text">
+                        <p>Loading your adventure...</p>
+                    </div>
+                </div>
+                
+                <div class="options-container">
+                    <div id="options-list">
+                        <!-- Options will be dynamically generated here -->
+                    </div>
+                    
+                    <div id="custom-action-container" class="hidden">
+                        <input type="text" id="custom-action-input" placeholder="Describe your action...">
+                        <button id="submit-custom-action" class="btn btn-secondary">Take Action</button>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="ending-screen" class="game-screen">
+                <h2 id="ending-title" class="ending-title">Your Journey Concludes</h2>
+                <div id="ending-narrative" class="ending-narrative"></div>
+                <button id="new-game-btn" class="btn btn-primary">Begin A New Journey</button>
+            </div>
+        </main>
+        
+        <footer>
+            <div class="game-controls">
+                <button id="save-game-btn" class="btn btn-small">Save</button>
+                <button id="load-game-btn" class="btn btn-small">Load</button>
+                <button id="music-toggle-btn" class="btn btn-small">Music: Off</button>
+            </div>
+        </footer>
+    </div>
+    
+    <!-- Save Game Modal -->
+    <div id="save-modal" class="modal">
+        <div class="modal-content">
+            <h3>Game Saved</h3>
+            <p>Your journey has been recorded. Use this code to continue later:</p>
+            <textarea id="save-code" readonly></textarea>
+            <button id="copy-save-code" class="btn btn-secondary">Copy Code</button>
+            <button class="btn btn-primary modal-close">Continue Journey</button>
+        </div>
+    </div>
+    
+    <!-- Load Game Modal -->
+    <div id="load-modal" class="modal">
+        <div class="modal-content">
+            <h3>Resume Your Journey</h3>
+            <p>Enter your save code below:</p>
+            <textarea id="load-code" placeholder="Paste your save code here..."></textarea>
+            <button id="submit-load-code" class="btn btn-primary">Resume Journey</button>
+            <button class="btn btn-secondary modal-close">Cancel</button>
+        </div>
+    </div>
+    
+    <!-- Loading Overlay -->
+    <div id="loading-overlay">
+        <div class="loader"></div>
+        <p class="loading-text">Assembling your adventure...</p>
+    </div>
+
+    <script>
+        // Game configuration
+        const apiBaseUrl = 'http://localhost:5000'; // Update with your Flask server URL
+        let gameState = null;
+        let sessionId = null;
+        let currentOptions = [];
+        let selectedMusic = null;
+        let musicPlaying = false;
+        
+        // DOM Elements
+        const startScreen = document.getElementById('start-screen');
+        const gameScreen = document.getElementById('game-screen');
+        const endingScreen = document.getElementById('ending-screen');
+        const startGameBtn = document.getElementById('start-game-btn');
+        const newGameBtn = document.getElementById('new-game-btn');
+        const sceneDescription = document.getElementById('scene-description');
+        const narrativeText = document.getElementById('narrative-text');
+        const optionsList = document.getElementById('options-list');
+        const healthBar = document.getElementById('health-bar');
+        const healthValue = document.getElementById('health-value');
+        const courageBar = document.getElementById('courage-bar');
+        const courageValue = document.getElementById('courage-value');
+        const wisdomBar = document.getElementById('wisdom-bar');
+        const wisdomValue = document.getElementById('wisdom-value');
+        const saveGameBtn = document.getElementById('save-game-btn');
+        const loadGameBtn = document.getElementById('load-game-btn');
+        const musicToggleBtn = document.getElementById('music-toggle-btn');
+        const saveModal = document.getElementById('save-modal');
+        const loadModal = document.getElementById('load-modal');
+        const saveCode = document.getElementById('save-code');
+        const loadCode = document.getElementById('load-code');
+        const copySaveCodeBtn = document.getElementById('copy-save-code');
+        const submitLoadCodeBtn = document.getElementById('submit-load-code');
+        const closeButtons = document.querySelectorAll('.modal-close');
+        const loadingOverlay = document.getElementById('loading-overlay');
+        const customActionContainer = document.getElementById('custom-action-container');
+        const customActionInput = document.getElementById('custom-action-input');
+        const submitCustomActionBtn = document.getElementById('submit-custom-action');
+        
+        // Initialize particle effect
+        function createParticles() {
+            const container = document.getElementById('particles-container');
+            container.innerHTML = '';
+            
+            const particleCount = Math.min(window.innerWidth / 10, 50);
+            
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                particle.classList.add('particle');
+                
+                // Random size
+                const size = Math.random() * 5 + 1;
+                particle.style.width = `${size}px`;
+                particle.style.height = `${size}px`;
+                
+                // Random position
+                particle.style.left = `${Math.random() * 100}vw`;
+                particle.style.top = `${Math.random() * 100}vh`;
+                
+                // Random animation duration and delay
+                const duration = Math.random() * 30 + 10;
+                const delay = Math.random() * 5;
+                particle.style.animationDuration = `${duration}s`;
+                particle.style.animationDelay = `${delay}s`;
+                
+                // Random opacity
+                const opacity = Math.random() * 0.3 + 0.1;
+                particle.style.opacity = opacity;
+                
+                container.appendChild(particle);
+            }
+        }
+        
+        // API Functions
+        async function startGame() {
+            showLoading();
+            
+            try {
+                const response = await fetch(`${apiBaseUrl}/start_game`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                const data = await response.json();
+                
+                if (data.error) {
+                    throw new Error(data.error);
+                }
+                
+                sessionId = data.session_id;
+                gameState = data.game_state;
+                currentOptions = data.options;
+                
+                updateGameUI(data);
+                hideLoading();
+                showScreen(gameScreen);
+            } catch (error) {
+                console.error('Error starting game:', error);
+                narrativeText.innerHTML = `<p>Error starting game: ${error.message || 'Unknown error'}. Please try again.</p>`;
+                hideLoading();
+                showScreen(gameScreen);
+            }
+        }
+        
+        async function makeChoice(choiceIndex, customAction = '') {
+            showLoading();
+            
+            try {
+                const response = await fetch(`${apiBaseUrl}/make_choice`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        session_id: sessionId,
+                        choice_index: choiceIndex,
+                        custom_action: customAction,
+                        current_options: currentOptions
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.error) {
+                    throw new Error(data.error);
+                }
+                
+                gameState = data.game_state;
+                currentOptions = data.options;
+                
+                updateGameUI(data);
+                
+                if (data.is_ending) {
+                    showEndingScreen(data);
+                }
+                
+                hideLoading();
+            } catch (error) {
+                console.error('Error making choice:', error);
+                narrativeText.innerHTML += `<p>Error: ${error.message || 'Unknown error'}. Please try again.</p>`;
+                hideLoading();
+            }
+        }
+        
+        async function submitCustomAction() {
+            const action = customActionInput.value.trim();
+            
+            if (!action) {
+                alert('Please describe your action');
+                return;
+            }
+            
+            showLoading();
+            
+            try {
+                const response = await fetch(`${apiBaseUrl}/custom_action`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        session_id: sessionId,
+                        custom_action: action
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.error) {
+                    throw new Error(data.error);
+                }
+                
+                gameState = data.game_state;
+                currentOptions = data.options;
+                
+                updateGameUI(data);
+                
+                if (data.is_ending) {
+                    showEndingScreen(data);
+                }
+                
+                // Reset custom action input
+                customActionInput.value = '';
+                customActionContainer.classList.add('hidden');
+                
+                hideLoading();
+            } catch (error) {
+                console.error('Error submitting custom action:', error);
+                narrativeText.innerHTML += `<p>Error: ${error.message || 'Unknown error'}. Please try again.</p>`;
+                hideLoading();
+            }
+        }
+        
+        async function saveGame() {
+            if (!sessionId || !gameState) {
+                alert('No active game to save');
+                return;
+            }
+            
+            try {
+                const response = await fetch(`${apiBaseUrl}/save_game`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        session_id: sessionId
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.error) {
+                    throw new Error(data.error);
+                }
+                
+                // Create a save code from the data
+                const saveData = {
+                    session_id: data.session_id,
+                    game_state: data.game_state
+                };
+                
+                saveCode.value = btoa(JSON.stringify(saveData));
+                saveModal.classList.add('active');
+            } catch (error) {
+                console.error('Error saving game:', error);
+                alert(`Error saving game: ${error.message || 'Unknown error'}`);
+            }
+        }
+        
+        async function loadGame() {
+            loadModal.classList.add('active');
+        }
+        
+        async function submitLoadCode() {
+            const code = loadCode.value.trim();
+            
+            if (!code) {
+                alert('Please enter a save code');
+                return;
+            }
+            
+            try {
+                // Decode the save code
+                const saveData = JSON.parse(atob(code));
+                
+                if (!saveData.session_id || !saveData.game_state) {
+                    throw new Error('Invalid save code');
+                }
+                
+                showLoading();
+                loadModal.classList.remove('active');
+                
+                const response = await fetch(`${apiBaseUrl}/load_game`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        session_id: saveData.session_id,
+                        game_state: saveData.game_state
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.error) {
+                    throw new Error(data.error);
+                }
+                
+                sessionId = data.session_id;
+                gameState = data.game_state;
+                currentOptions = data.options;
+                
+                updateGameUI(data);
+                showScreen(gameScreen);
+                hideLoading();
+            } catch (error) {
+                console.error('Error loading game:', error);
+                alert(`Error loading game: ${error.message || 'Invalid save code'}`);
+                hideLoading();
+            }
+        }
+        
+        // UI Update Functions
+        function updateGameUI(data) {
+            sceneDescription.textContent = data.scene_description;
+            narrativeText.innerHTML = `<p>${data.narrative.replace(/\n\n/g, '</p><p>')}</p>`;
+            
+            // Update stats
+            if (gameState && gameState.player_stats) {
+                const { health, courage, wisdom } = gameState.player_stats;
+                
+                healthBar.style.width = `${health}%`;
+                healthValue.textContent = health;
+                
+                courageBar.style.width = `${courage}%`;
+                courageValue.textContent = courage;
+                
+                wisdomBar.style.width = `${wisdom}%`;
+                wisdomValue.textContent = wisdom;
+            }
+            
+            // Render options
+            renderOptions(data.options);
+        }
+        
+        function renderOptions(options) {
+            // Clear existing options
+            optionsList.innerHTML = '';
+            
+            // Add new options
+            options.forEach((option, index) => {
+                const button = document.createElement('button');
+                button.className = 'option-btn';
+                button.textContent = option.text;
+                
+                if (option.next_scene === 'custom_action') {
+                    button.addEventListener('click', () => {
+                        // Show custom action input
+                        customActionContainer.classList.remove('hidden');
+                    });
+                } else {
+                    button.addEventListener('click', () => makeChoice(index));
+                }
+                
+                optionsList.appendChild(button);
+            });
+            
+            // Initially hide custom action container
+            customActionContainer.classList.add('hidden');
+        }
+        
+        function showScreen(screen) {
+            // Hide all screens
+            startScreen.classList.remove('active');
+            gameScreen.classList.remove('active');
+            endingScreen.classList.remove('active');
+            
+            // Show the requested screen
+            screen.classList.add('active');
+        }
+        
+        function showEndingScreen(data) {
+            document.getElementById('ending-title').textContent = data.scene_description;
+            document.getElementById('ending-narrative').innerHTML = `<p>${data.narrative.replace(/\n\n/g, '</p><p>')}</p>`;
+            showScreen(endingScreen);
+        }
+        
+        function showLoading() {
+            loadingOverlay.classList.add('active');
+        }
+        
+        function hideLoading() {
+            loadingOverlay.classList.remove('active');
+        }
+        
+        function toggleMusic() {
+            if (!selectedMusic) {
+                // No music selected yet, choose a random ambient track
+                const tracks = [
+                    'https://cdn.pixabay.com/audio/2021/08/08/audio_5cb3f4e9ce.mp3', // Ambient sci-fi
+                    'https://cdn.pixabay.com/audio/2022/06/10/audio_48cbe58b08.mp3', // Epic suspense
+                    'https://cdn.pixabay.com/audio/2022/02/07/audio_8429be18dc.mp3'  // Digital atmosphere
+                ];
+                
+                const randomTrack = tracks[Math.floor(Math.random() * tracks.length)];
+                selectedMusic = new Audio(randomTrack);
+                selectedMusic.loop = true;
+                selectedMusic.volume = 0.3;
+            }
+            
+            if (musicPlaying) {
+                selectedMusic.pause();
+                musicPlaying = false;
+                musicToggleBtn.textContent = 'Music: Off';
+            } else {
+                selectedMusic.play();
+                musicPlaying = true;
+                musicToggleBtn.textContent = 'Music: On';
+            }
+        }
+        
+        // Event Listeners
+        startGameBtn.addEventListener('click', () => {
+            startGame();
+        });
+        
+        newGameBtn.addEventListener('click', () => {
+            startGame();
+        });
+        
+        saveGameBtn.addEventListener('click', () => {
+            saveGame();
+        });
+        
+        loadGameBtn.addEventListener('click', () => {
+            loadGame();
+        });
+        
+        musicToggleBtn.addEventListener('click', () => {
+            toggleMusic();
+        });
+        
+        copySaveCodeBtn.addEventListener('click', () => {
+            saveCode.select();
+            document.execCommand('copy');
+            copySaveCodeBtn.textContent = 'Copied!';
+            setTimeout(() => {
+                copySaveCodeBtn.textContent = 'Copy Code';
+            }, 2000);
+        });
+        
+        submitLoadCodeBtn.addEventListener('click', () => {
+            submitLoadCode();
+        });
+        
+        closeButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                saveModal.classList.remove('active');
+                loadModal.classList.remove('active');
+            });
+        });
+        
+        submitCustomActionBtn.addEventListener('click', () => {
+            submitCustomAction();
+        });
+        
+        customActionInput.addEventListener('keypress', (event) => {
+            if (event.key === 'Enter') {
+                submitCustomAction();
+            }
+        });
+        
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            createParticles();
+            window.addEventListener('resize', createParticles);
+        });
+    </script>
+</body>
+</html>
